@@ -30,21 +30,27 @@ fn main() {
     println!("Total value is: {count}");
 }
 
-// the calibration value can be found by combining the
-// first digit and the last digit (in that order) to form a single two-digit number.
-fn calibration_digit(line: &str, nums: &HashMap<&str, u32>) -> u32 {
-    let mut indices: HashMap<usize, u32> = HashMap::new();
-    for num in nums.keys().filter(|&key| line.contains(key)) {
-        for (i, _) in line.match_indices(num) {
-            indices.insert(i, nums[num]);
-        }
-    }
-
+fn add_digits_part1(line: &str, indices: &mut HashMap<usize, u32>) {
     for (i, c) in line.chars().enumerate() {
         if c.is_numeric() {
             indices.insert(i, format!("{c}").parse().unwrap());
         }
     }
+}
+
+fn add_digits_part2(line: &str, indices: &mut HashMap<usize, u32>, nums: &HashMap<&str, u32>) {
+    for num in nums.keys().filter(|&key| line.contains(key)) {
+        for (i, _) in line.match_indices(num) {
+            indices.insert(i, nums[num]);
+        }
+    }
+}
+
+fn calibration_digit(line: &str, nums: &HashMap<&str, u32>) -> u32 {
+    let mut indices: HashMap<usize, u32> = HashMap::new();
+
+    add_digits_part1(line, &mut indices);
+    add_digits_part2(line, &mut indices, nums);
 
     let mut values: Vec<(usize, u32)> = indices.into_iter().collect();
     values.sort_by(|a, b| a.0.cmp(&b.0));
